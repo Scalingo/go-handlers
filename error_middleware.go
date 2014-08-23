@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"runtime/debug"
 	"time"
 
 	"github.com/codegangsta/negroni"
@@ -18,6 +19,7 @@ func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
 		defer func() {
 			if r := recover(); r != nil {
+				debug.PrintStack()
 				rollbar.Error(rollbar.CRIT, r.(error))
 				w.WriteHeader(500)
 				fmt.Fprintln(w, r)
