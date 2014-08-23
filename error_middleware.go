@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -20,9 +21,13 @@ func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 		defer func() {
 			if r := recover(); r != nil {
 				debug.PrintStack()
-				rollbar.Error(rollbar.CRIT, r.(error))
+				err, ok := r.(error)
+				if !ok {
+					err = errors.New(r.(string))
+				}
+				rollbar.Error(rollbar.CRIT, err)
 				w.WriteHeader(500)
-				fmt.Fprintln(w, r)
+				fmt.Fprintln(w, err)
 			}
 		}()
 
