@@ -24,7 +24,12 @@ func (l *LoggingMiddleware) Apply(next HandlerFunc) HandlerFunc {
 		rw := negroni.NewResponseWriter(w)
 		err := next(rw, r, vars)
 		after := time.Now()
-		l.logger.Printf("%v %v %v - %v - %d - %0.4f", after, r.Method, r.URL, r.RemoteAddr, rw.Status(), after.Sub(before).Seconds())
+
+		status := rw.Status()
+		if status == 0 {
+			status = 200
+		}
+		l.logger.Printf("%v %v %v - %v - %d - %0.4f", after, r.Method, r.URL, r.RemoteAddr, status, after.Sub(before).Seconds())
 		return err
 	}
 }
