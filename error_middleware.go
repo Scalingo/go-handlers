@@ -35,7 +35,7 @@ func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 		err := handler(rw, r, vars)
 
 		if err != nil {
-			errorLogger.Printf("%v %s (%d): %v\n", time.Now(), r.URL.Path, rw.Status(), errgo.Details(err))
+			errorLogger.Printf("%v %v %s (%d): %v\n", time.Now(), r.Method, r.URL.Path, rw.Status(), errgo.Details(err))
 			if rw.Status() == 500 {
 				rollbar.Error(rollbar.ERR, err)
 			} else if rw.Status()%400 < 100 {
