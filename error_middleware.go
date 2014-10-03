@@ -25,7 +25,7 @@ func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 				if !ok {
 					err = errors.New(r.(string))
 				}
-				rollbar.Error(rollbar.CRIT, err)
+				rollbar.RequestError(rollbar.CRIT, r, err)
 				w.WriteHeader(500)
 				fmt.Fprintln(w, err)
 			}
@@ -37,9 +37,9 @@ func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 		if err != nil {
 			errorLogger.Printf("%v %v %s (%d): %v\n", time.Now(), r.Method, r.URL.Path, rw.Status(), errgo.Details(err))
 			if rw.Status() == 500 {
-				rollbar.Error(rollbar.ERR, err)
+				rollbar.RequestError(rollbar.ERR, r, err)
 			} else if rw.Status()%400 < 100 {
-				rollbar.Error(rollbar.WARN, err)
+				rollbar.RequestError(rollbar.WARN, r, err)
 			}
 			writeError(rw, err)
 		}
