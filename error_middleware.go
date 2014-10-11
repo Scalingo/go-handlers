@@ -19,11 +19,11 @@ var errorLogger = log.New(os.Stderr, "[http-error] ", 0)
 func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
 		defer func() {
-			if r := recover(); r != nil {
+			if rec := recover(); rec != nil {
 				debug.PrintStack()
-				err, ok := r.(error)
+				err, ok := rec.(error)
 				if !ok {
-					err = errors.New(r.(string))
+					err = errors.New(rec.(string))
 				}
 				rollbar.RequestError(rollbar.CRIT, r, err)
 				w.WriteHeader(500)
