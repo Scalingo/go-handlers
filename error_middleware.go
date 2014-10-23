@@ -9,6 +9,7 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/Soulou/errgo-rollbar"
 	"github.com/codegangsta/negroni"
 	"github.com/juju/errgo"
 	"github.com/stvp/rollbar"
@@ -37,9 +38,9 @@ func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 		if err != nil {
 			errorLogger.Printf("%v %v %s (%d): %v\n", time.Now(), r.Method, r.URL.Path, rw.Status(), errgo.Details(err))
 			if rw.Status() == 500 {
-				rollbar.RequestError(rollbar.ERR, r, err)
+				rollbar.RequestErrorWithStack(rollbar.ERR, r, err, errgorollbar.BuildStack(err))
 			} else if rw.Status()%400 < 100 {
-				rollbar.RequestError(rollbar.WARN, r, err)
+				rollbar.RequestErrorWithStack(rollbar.WARN, r, err, errgorollbar.BuildStack(err))
 			}
 			writeError(rw, err)
 		}
