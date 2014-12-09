@@ -80,7 +80,7 @@ router.Use(MiddlewareFunc(NewCorsMiddleware))
 Thie middleware send notification to Rollbar using,
 you need to configure it previously.
 
-https://github.com/svtp/rollbar
+https://github.com/stvp/rollbar
 
 ```go
 router.Use(MiddlewareFunc(ErrorHandler))
