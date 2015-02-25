@@ -11,8 +11,8 @@ import (
 
 	"github.com/Soulou/errgo-rollbar"
 	"github.com/codegangsta/negroni"
-	"github.com/juju/errgo"
 	"github.com/stvp/rollbar"
+	"gopkg.in/errgo.v1"
 )
 
 var errorLogger = log.New(os.Stderr, "[http-error] ", 0)
