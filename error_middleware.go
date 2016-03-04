@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -56,5 +57,9 @@ func writeError(w negroni.ResponseWriter, err error) {
 	if w.Header().Get("Content-Type") == "" {
 		w.Header().Set("Content-Type", "text/plain")
 	}
-	fmt.Fprintln(w, err)
+	if w.Header().Get("Content-Type") == "application/json" {
+		json.NewEncoder(w).Encode(&(map[string]string{"error": err.Error()}))
+	} else {
+		fmt.Fprintln(w, err)
+	}
 }
