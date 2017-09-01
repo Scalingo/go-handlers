@@ -49,7 +49,7 @@ func TestRequestIDMiddleware(t *testing.T) {
 					assert.Equal(t, example.RequestID, id)
 				}
 				assert.NotEmpty(t, id)
-				ctxValue := r.Context().Value("request-id").(string)
+				ctxValue := r.Context().Value("request_id").(string)
 				assert.Equal(t, id, ctxValue)
 
 				return nil

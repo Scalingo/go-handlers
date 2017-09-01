@@ -14,7 +14,7 @@ func RequestIDMiddleware(next HandlerFunc) HandlerFunc {
 			id = uuid.NewV4().String()
 			r.Header.Set("X-Request-ID", id)
 		}
-		r = r.WithContext(context.WithValue(r.Context(), "request-id", id))
+		r = r.WithContext(context.WithValue(r.Context(), "request_id", id))
 		return next(w, r, vars)
 	}
 }
