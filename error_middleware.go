@@ -37,7 +37,7 @@ func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 		err := handler(rw, r, vars)
 
 		if err != nil {
-			logger.WithField("req": r, "error", err).Error("request error")
+			logger.WithField("error", err).Error("request error")
 			if rw.Status() == 500 {
 				rollbar.RequestErrorWithStack(rollbar.ERR, r, err, errgorollbar.BuildStack(err))
 			} else if rw.Status()%400 < 100 {
