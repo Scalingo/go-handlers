@@ -4,19 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 	"runtime/debug"
-	"time"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/Soulou/errgo-rollbar"
 	"github.com/codegangsta/negroni"
 	"github.com/stvp/rollbar"
-	"gopkg.in/errgo.v1"
 )
-
-var errorLogger = log.New(os.Stderr, "[http-error] ", 0)
 
 func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
@@ -33,11 +28,16 @@ func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 			}
 		}()
 
+		logger, ok := r.Context().Value("logger").(logrus.FieldLogger)
+		if !ok {
+			logger = logrus.New()
+		}
+
 		rw := negroni.NewResponseWriter(w)
 		err := handler(rw, r, vars)
 
 		if err != nil {
-			errorLogger.Printf("%v %v %s (%d): %v\n", time.Now(), r.Method, r.URL.Path, rw.Status(), errgo.Details(err))
+			logger.WithField("req": r, "error", err).Error("request error")
 			if rw.Status() == 500 {
 				rollbar.RequestErrorWithStack(rollbar.ERR, r, err, errgorollbar.BuildStack(err))
 			} else if rw.Status()%400 < 100 {
