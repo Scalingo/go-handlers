@@ -22,12 +22,12 @@ func TestRequestIDMiddleware(t *testing.T) {
 			RequestID:         uuid.NewV4().String(),
 			ExpectIdenticalID: true,
 		}, {
-			Name:              "request without a X-RequestID header",
+			Name:              "request without a X-Request-ID header",
 			AddHeader:         false,
 			RequestID:         "",
 			ExpectIdenticalID: false,
 		}, {
-			Name:              "request with an empty X-RequestID header",
+			Name:              "request with an empty X-Request-ID header",
 			AddHeader:         true,
 			RequestID:         "",
 			ExpectIdenticalID: false,
