@@ -17,6 +17,7 @@ func NewRouter(prefix string) *Router {
 	r := &Router{}
 	r.Router = mux.NewRouter()
 	logger := log.New(os.Stdout, fmt.Sprintf("[%s] ", prefix), 0)
+	r.Use(MiddlewareFunc(RequestIDMiddleware))
 	r.Use(NewLoggingMiddleware(logger))
 	return r
 }
