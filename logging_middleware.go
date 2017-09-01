@@ -45,7 +45,7 @@ func (l *LoggingMiddleware) Apply(next HandlerFunc) HandlerFunc {
 			}
 		}
 		logger = logger.WithFields(fields)
-		logger.Info()
+		logger.Info("starting request")
 
 		rw := negroni.NewResponseWriter(w)
 		err := next(rw, r, vars)
@@ -60,7 +60,7 @@ func (l *LoggingMiddleware) Apply(next HandlerFunc) HandlerFunc {
 			"status":   status,
 			"duration": after.Sub(before).Seconds(),
 			"bytes":    rw.Size(),
-		}).Info()
+		}).Info("request completed")
 
 		return err
 	}
