@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/codegangsta/negroni"
+	"github.com/sirupsen/logrus"
 )
 
 type LoggingMiddleware struct {
