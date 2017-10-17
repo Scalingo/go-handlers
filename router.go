@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 )
 
 type Router struct {

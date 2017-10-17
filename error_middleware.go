@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/Soulou/errgo-rollbar"
 	"github.com/codegangsta/negroni"
+	"github.com/sirupsen/logrus"
 	"github.com/stvp/rollbar"
 )
 
@@ -51,12 +51,17 @@ func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 }
 
 func writeError(w negroni.ResponseWriter, err error) {
-	if !w.Written() {
-		w.WriteHeader(w.Status())
-	}
 	if w.Header().Get("Content-Type") == "" {
 		w.Header().Set("Content-Type", "text/plain")
 	}
+
+	// If the status is 0, In means WriteHeader has not been called
+	// and we've to write it, otherwise it has been done in the handler
+	// with another response code.
+	if w.Status() == 0 {
+		w.WriteHeader(500)
+	}
+
 	if w.Header().Get("Content-Type") == "application/json" {
 		json.NewEncoder(w).Encode(&(map[string]string{"error": err.Error()}))
 	} else {
