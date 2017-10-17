@@ -64,10 +64,13 @@ notification as a simple middleware.
 ### Logging Middleware
 
 ```go
-logger := Log.New(os.Stdout, "[http]", 0)
+logger := logrus.New()
 middleware := NewLoggingMiddleware(logger)
 router.Use(middleware)
 ```
+
+That being said there when `NewRouter` it creates a LoggingMiddleware by
+default.
 
 ### Cors Middleware
 
@@ -77,11 +80,17 @@ router.Use(MiddlewareFunc(NewCorsMiddleware))
 
 ### Error Middleware
 
-Thie middleware send notification to Rollbar using,
-you need to configure it previously.
+Thie middleware writes in the logs with the `Error` log level.
+To send logs to rollbar, ensure your logger is properly configured
+with the rollbar hook.
 
-https://github.com/stvp/rollbar
 
 ```go
+import (
+  "gopkg.in/Scalingo/logrus-rollbar.v1"
+)
+
+logger := logger.Default(logrus_rollbar.New(0))
+router := handlers.NewRouter(logger)
 router.Use(MiddlewareFunc(ErrorHandler))
 ```

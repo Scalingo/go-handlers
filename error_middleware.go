@@ -7,14 +7,17 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/Soulou/errgo-rollbar"
 	"github.com/codegangsta/negroni"
 	"github.com/sirupsen/logrus"
-	"github.com/stvp/rollbar"
 )
 
 func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+		logger, ok := r.Context().Value("logger").(logrus.FieldLogger)
+		if !ok {
+			logger = logrus.New()
+		}
+
 		defer func() {
 			if rec := recover(); rec != nil {
 				debug.PrintStack()
@@ -22,27 +25,17 @@ func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 				if !ok {
 					err = errors.New(rec.(string))
 				}
-				rollbar.RequestError(rollbar.CRIT, r, err)
+				logger.WithError(err).Error("recover panic")
 				w.WriteHeader(500)
 				fmt.Fprintln(w, err)
 			}
 		}()
-
-		logger, ok := r.Context().Value("logger").(logrus.FieldLogger)
-		if !ok {
-			logger = logrus.New()
-		}
 
 		rw := negroni.NewResponseWriter(w)
 		err := handler(rw, r, vars)
 
 		if err != nil {
 			logger.WithField("error", err).Error("request error")
-			if rw.Status() == 500 {
-				rollbar.RequestErrorWithStack(rollbar.ERR, r, err, errgorollbar.BuildStack(err))
-			} else if rw.Status()%400 < 100 {
-				rollbar.RequestErrorWithStack(rollbar.WARN, r, err, errgorollbar.BuildStack(err))
-			}
 			writeError(rw, err)
 		}
 
