@@ -11,7 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
+var ErrorMiddleware MiddlewareFunc = MiddlewareFunc(func(handler HandlerFunc) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
 		logger, ok := r.Context().Value("logger").(logrus.FieldLogger)
 		if !ok {
@@ -41,7 +41,7 @@ func ErrorMiddleware(handler HandlerFunc) HandlerFunc {
 
 		return err
 	}
-}
+})
 
 func writeError(w negroni.ResponseWriter, err error) {
 	if w.Header().Get("Content-Type") == "" {
