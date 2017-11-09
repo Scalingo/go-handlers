@@ -11,8 +11,8 @@ import (
 	"gopkg.in/errgo.v1"
 )
 
-func AuthMiddleware(check func(user, password string) bool) func(HandlerFunc) HandlerFunc {
-	return func(handler HandlerFunc) HandlerFunc {
+func AuthMiddleware(check func(user, password string) bool) MiddlewareFunc {
+	return MiddlewareFunc(func(handler HandlerFunc) HandlerFunc {
 		return func(res http.ResponseWriter, req *http.Request, vars map[string]string) error {
 			auth := req.Header.Get("Authorization")
 			if auth == "" {
@@ -38,5 +38,5 @@ func AuthMiddleware(check func(user, password string) bool) func(HandlerFunc) Ha
 			}
 			return handler(res, req, vars)
 		}
-	}
+	})
 }
