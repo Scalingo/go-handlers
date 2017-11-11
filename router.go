@@ -10,7 +10,7 @@ type Router struct {
 	middlewares []Middleware
 }
 
-func NewRouter(logger *logrus.Logger) *Router {
+func NewRouter(logger logrus.FieldLogger) *Router {
 	r := &Router{}
 	r.Router = mux.NewRouter()
 	r.Use(MiddlewareFunc(RequestIDMiddleware))
