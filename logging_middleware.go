@@ -13,7 +13,7 @@ type LoggingMiddleware struct {
 	logger logrus.FieldLogger
 }
 
-func NewLoggingMiddleware(logger *logrus.Logger) Middleware {
+func NewLoggingMiddleware(logger logrus.FieldLogger) Middleware {
 	m := &LoggingMiddleware{logger}
 	return m
 }
