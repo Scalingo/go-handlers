@@ -18,6 +18,13 @@ func NewRouter(logger logrus.FieldLogger) *Router {
 	return r
 }
 
+func New() *Router {
+	r := &Router{}
+	r.Router = mux.NewRouter()
+	r.Use(MiddlewareFunc(RequestIDMiddleware))
+	return r
+}
+
 func (r *Router) HandleFunc(pattern string, f HandlerFunc) *mux.Route {
 	for _, m := range r.middlewares {
 		f = m.Apply(f)

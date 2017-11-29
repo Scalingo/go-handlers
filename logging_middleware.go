@@ -3,19 +3,56 @@ package handlers
 import (
 	"context"
 	"net/http"
+	"os"
+	"regexp"
+	"sync"
 	"time"
+
+	"gopkg.in/errgo.v1"
 
 	"github.com/codegangsta/negroni"
 	"github.com/sirupsen/logrus"
 )
 
+var (
+	loggerFuncMap = map[logrus.Level]func(logrus.FieldLogger, string, ...interface{}){
+		logrus.DebugLevel: logrus.FieldLogger.Debugf,
+		logrus.InfoLevel:  logrus.FieldLogger.Infof,
+		logrus.WarnLevel:  logrus.FieldLogger.Warnf,
+		logrus.ErrorLevel: logrus.FieldLogger.Errorf,
+		logrus.FatalLevel: logrus.FieldLogger.Fatalf,
+		logrus.PanicLevel: logrus.FieldLogger.Panicf,
+	}
+)
+
+type patternInfo struct {
+	re    *regexp.Regexp
+	level logrus.Level
+}
+
 type LoggingMiddleware struct {
-	logger logrus.FieldLogger
+	logger             logrus.FieldLogger
+	filtersEnabledInit sync.Once
+	filtersEnabled     bool
+	filters            []patternInfo
 }
 
 func NewLoggingMiddleware(logger logrus.FieldLogger) Middleware {
-	m := &LoggingMiddleware{logger}
+	m := &LoggingMiddleware{logger: logger, filters: []patternInfo{}}
 	return m
+}
+
+func NewLoggingMiddlewareWithFilters(logger logrus.FieldLogger, filters map[string]logrus.Level) (*LoggingMiddleware, error) {
+	refilters := []patternInfo{}
+	for pattern, level := range filters {
+		re, err := regexp.Compile(pattern)
+		if err != nil {
+			return nil, errgo.Notef(err, "invalid regexp '%v'", pattern)
+		}
+		refilters = append(refilters, patternInfo{re: re, level: level})
+	}
+	m := &LoggingMiddleware{logger: logger, filters: refilters}
+	return m, nil
 }
 
 func (l *LoggingMiddleware) Apply(next HandlerFunc) HandlerFunc {
@@ -45,7 +82,20 @@ func (l *LoggingMiddleware) Apply(next HandlerFunc) HandlerFunc {
 			}
 		}
 		logger = logger.WithFields(fields)
-		logger.Info("starting request")
+
+		loglevel := logrus.InfoLevel
+
+		// Filters are not enabled by default as we think logs should never be
+		// filtered in production. Set HANDLERS_LOG_FILTERS=true environment
+		// variable to enforce the feature
+		if l.isFiltersEnabled() {
+			for _, info := range l.filters {
+				if info.re.MatchString(r.URL.Path) {
+					loglevel = info.level
+				}
+			}
+		}
+		loggerFuncMap[loglevel](logger, "starting request")
 
 		rw := negroni.NewResponseWriter(w)
 		err := next(rw, r, vars)
@@ -56,12 +106,22 @@ func (l *LoggingMiddleware) Apply(next HandlerFunc) HandlerFunc {
 			status = 200
 		}
 
-		logger.WithFields(logrus.Fields{
+		logger = logger.WithFields(logrus.Fields{
 			"status":   status,
 			"duration": after.Sub(before).Seconds(),
 			"bytes":    rw.Size(),
-		}).Info("request completed")
+		})
+		loggerFuncMap[loglevel](logger, "request completed")
 
 		return err
 	}
+}
+
+func (l *LoggingMiddleware) isFiltersEnabled() bool {
+	l.filtersEnabledInit.Do(func() {
+		if os.Getenv("HANDLERS_LOG_FILTERS") == "true" {
+			l.filtersEnabled = true
+		}
+	})
+	return l.filtersEnabled
 }
