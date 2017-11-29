@@ -3,19 +3,52 @@ package handlers
 import (
 	"context"
 	"net/http"
+	"regexp"
 	"time"
+
+	"gopkg.in/errgo.v1"
 
 	"github.com/codegangsta/negroni"
 	"github.com/sirupsen/logrus"
 )
 
+var (
+	loggerFuncMap = map[logrus.Level]func(logrus.FieldLogger, string, ...interface{}){
+		logrus.DebugLevel: logrus.FieldLogger.Debugf,
+		logrus.InfoLevel:  logrus.FieldLogger.Infof,
+		logrus.WarnLevel:  logrus.FieldLogger.Warnf,
+		logrus.ErrorLevel: logrus.FieldLogger.Errorf,
+		logrus.FatalLevel: logrus.FieldLogger.Fatalf,
+		logrus.PanicLevel: logrus.FieldLogger.Panicf,
+	}
+)
+
+type patternInfo struct {
+	re    *regexp.Regexp
+	level logrus.Level
+}
+
 type LoggingMiddleware struct {
-	logger logrus.FieldLogger
+	logger  logrus.FieldLogger
+	filters map[string]patternInfo
 }
 
 func NewLoggingMiddleware(logger logrus.FieldLogger) Middleware {
-	m := &LoggingMiddleware{logger}
+	m := &LoggingMiddleware{logger: logger, filters: map[string]patternInfo{}}
 	return m
+}
+
+func NewLoggingMiddlewareWithFilters(logger logrus.FieldLogger, filters map[string]logrus.Level) (*LoggingMiddleware, error) {
+	refilters := map[string]patternInfo{}
+	for pattern, level := range filters {
+		re, err := regexp.Compile(pattern)
+		if err != nil {
+			return nil, errgo.Notef(err, "invalid regexp '%v'", pattern)
+		}
+		refilters[pattern] = patternInfo{re: re, level: level}
+	}
+	m := &LoggingMiddleware{logger: logger, filters: refilters}
+	return m, nil
 }
 
 func (l *LoggingMiddleware) Apply(next HandlerFunc) HandlerFunc {
@@ -45,7 +78,14 @@ func (l *LoggingMiddleware) Apply(next HandlerFunc) HandlerFunc {
 			}
 		}
 		logger = logger.WithFields(fields)
-		logger.Info("starting request")
+
+		loglevel := logrus.InfoLevel
+		for _, info := range l.filters {
+			if info.re.MatchString(r.URL.Path) {
+				loglevel = info.level
+			}
+		}
+		loggerFuncMap[loglevel](logger, "starting request")
 
 		rw := negroni.NewResponseWriter(w)
 		err := next(rw, r, vars)
@@ -56,11 +96,12 @@ func (l *LoggingMiddleware) Apply(next HandlerFunc) HandlerFunc {
 			status = 200
 		}
 
-		logger.WithFields(logrus.Fields{
+		logger = logger.WithFields(logrus.Fields{
 			"status":   status,
 			"duration": after.Sub(before).Seconds(),
 			"bytes":    rw.Size(),
-		}).Info("request completed")
+		})
+		loggerFuncMap[loglevel](logger, "request completed")
 
 		return err
 	}
