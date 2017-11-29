@@ -30,22 +30,22 @@ type patternInfo struct {
 
 type LoggingMiddleware struct {
 	logger  logrus.FieldLogger
-	filters map[string]patternInfo
+	filters []patternInfo
 }
 
 func NewLoggingMiddleware(logger logrus.FieldLogger) Middleware {
-	m := &LoggingMiddleware{logger: logger, filters: map[string]patternInfo{}}
+	m := &LoggingMiddleware{logger: logger, filters: []patternInfo{}}
 	return m
 }
 
 func NewLoggingMiddlewareWithFilters(logger logrus.FieldLogger, filters map[string]logrus.Level) (*LoggingMiddleware, error) {
-	refilters := map[string]patternInfo{}
+	refilters := []patternInfo{}
 	for pattern, level := range filters {
 		re, err := regexp.Compile(pattern)
 		if err != nil {
 			return nil, errgo.Notef(err, "invalid regexp '%v'", pattern)
 		}
-		refilters[pattern] = patternInfo{re: re, level: level}
+		refilters = append(refilters, patternInfo{re: re, level: level})
 	}
 	m := &LoggingMiddleware{logger: logger, filters: refilters}
 	return m, nil
