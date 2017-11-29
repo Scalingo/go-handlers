@@ -3,7 +3,9 @@ package handlers
 import (
 	"context"
 	"net/http"
+	"os"
 	"regexp"
+	"sync"
 	"time"
 
 	"gopkg.in/errgo.v1"
@@ -29,8 +31,10 @@ type patternInfo struct {
 }
 
 type LoggingMiddleware struct {
-	logger  logrus.FieldLogger
-	filters []patternInfo
+	logger             logrus.FieldLogger
+	filtersEnabledInit sync.Once
+	filtersEnabled     bool
+	filters            []patternInfo
 }
 
 func NewLoggingMiddleware(logger logrus.FieldLogger) Middleware {
@@ -80,9 +84,15 @@ func (l *LoggingMiddleware) Apply(next HandlerFunc) HandlerFunc {
 		logger = logger.WithFields(fields)
 
 		loglevel := logrus.InfoLevel
-		for _, info := range l.filters {
-			if info.re.MatchString(r.URL.Path) {
-				loglevel = info.level
+
+		// Filters are not enabled by default as we think logs should never be
+		// filtered in production. Set HANDLERS_LOG_FILTERS=true environment
+		// variable to enforce the feature
+		if l.isFiltersEnabled() {
+			for _, info := range l.filters {
+				if info.re.MatchString(r.URL.Path) {
+					loglevel = info.level
+				}
 			}
 		}
 		loggerFuncMap[loglevel](logger, "starting request")
@@ -105,4 +115,13 @@ func (l *LoggingMiddleware) Apply(next HandlerFunc) HandlerFunc {
 
 		return err
 	}
+}
+
+func (l *LoggingMiddleware) isFiltersEnabled() bool {
+	l.filtersEnabledInit.Do(func() {
+		if os.Getenv("HANDLERS_LOG_FILTERS") == "true" {
+			l.filtersEnabled = true
+		}
+	})
+	return l.filtersEnabled
 }
