@@ -2,20 +2,22 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
+	stderr "errors"
 	"fmt"
 	"net/http"
 	"runtime/debug"
 
+	"github.com/Scalingo/go-utils/errors"
+	"github.com/Scalingo/go-utils/logger"
 	"github.com/codegangsta/negroni"
 	"github.com/sirupsen/logrus"
 )
 
 var ErrorMiddleware MiddlewareFunc = MiddlewareFunc(func(handler HandlerFunc) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
-		logger, ok := r.Context().Value("logger").(logrus.FieldLogger)
+		log, ok := r.Context().Value("logger").(logrus.FieldLogger)
 		if !ok {
-			logger = logrus.New()
+			log = logrus.New()
 		}
 
 		defer func() {
@@ -23,9 +25,9 @@ var ErrorMiddleware MiddlewareFunc = MiddlewareFunc(func(handler HandlerFunc) Ha
 				debug.PrintStack()
 				err, ok := rec.(error)
 				if !ok {
-					err = errors.New(rec.(string))
+					err = stderr.New(rec.(string))
 				}
-				logger.WithError(err).Error("recover panic")
+				log.WithError(err).Error("recover panic")
 				w.WriteHeader(500)
 				fmt.Fprintln(w, err)
 			}
@@ -34,8 +36,12 @@ var ErrorMiddleware MiddlewareFunc = MiddlewareFunc(func(handler HandlerFunc) Ha
 		rw := negroni.NewResponseWriter(w)
 		err := handler(rw, r, vars)
 
+		if ctxerr, ok := err.(errors.ErrCtx); ok {
+			log = logger.Get(ctxerr.Ctx())
+		}
+
 		if err != nil {
-			logger.WithField("error", err).Error("request error")
+			log.WithField("error", err).Error("request error")
 			writeError(rw, err)
 		}
 
