@@ -2,13 +2,12 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"regexp"
 	"sync"
 	"time"
-
-	"gopkg.in/errgo.v1"
 
 	"github.com/codegangsta/negroni"
 	"github.com/sirupsen/logrus"
@@ -47,7 +46,7 @@ func NewLoggingMiddlewareWithFilters(logger logrus.FieldLogger, filters map[stri
 	for pattern, level := range filters {
 		re, err := regexp.Compile(pattern)
 		if err != nil {
-			return nil, errgo.Notef(err, "invalid regexp '%v'", pattern)
+			return nil, fmt.Errorf("invalid regexp '%v': %v", pattern, err)
 		}
 		refilters = append(refilters, patternInfo{re: re, level: level})
 	}
