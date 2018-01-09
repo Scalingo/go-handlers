@@ -5,11 +5,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRequestIDMiddleware(t *testing.T) {
+	newUUID, err := uuid.NewV4().String()
+	require.NoError(t, err)
 	examples := []struct {
 		Name              string
 		AddHeader         bool
@@ -19,7 +22,7 @@ func TestRequestIDMiddleware(t *testing.T) {
 		{
 			Name:              "request with a X-Request-ID header",
 			AddHeader:         true,
-			RequestID:         uuid.NewV4().String(),
+			RequestID:         newUUID,
 			ExpectIdenticalID: true,
 		}, {
 			Name:              "request without a X-Request-ID header",
