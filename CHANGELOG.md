@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.4 - 9 Jan 2018
+
+* Accept github.com/Scalingo/go-utils.ErrCtx to pass ctx to error middleware
+
 ## v1.2.3 - 29 Nov 2017
 
 * Add ability to create logging level filters in the LoggerMiddleware
