@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.5 - 12 Apr 2019
+
+* Error middleware handle the case of ValidationErrors
+
 ## v1.2.4 - 9 Jan 2018
 
 * Accept github.com/Scalingo/go-utils.ErrCtx to pass ctx to error middleware
