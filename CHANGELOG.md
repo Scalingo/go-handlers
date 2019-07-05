@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.6 - 5 Jul 2019
+
+* Change UUID generation lib
+
 ## v1.2.5 - 12 Apr 2019
 
 * Error middleware handle the case of ValidationErrors
