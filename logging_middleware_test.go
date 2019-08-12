@@ -15,17 +15,18 @@ import (
 
 func TestLoggingMiddleware_Apply(t *testing.T) {
 	examples := []struct {
-		Name           string
-		Filters        map[string]logrus.Level
-		Handler        func(t *testing.T) HandlerFunc
-		Path           string
-		Method         string
-		Host           string
-		Headers        map[string]string
-		Context        func(context.Context) context.Context
-		Env            map[string]string
-		ExpectedLevel  logrus.Level
-		ExpectedFields []string
+		Name                string
+		Filters             map[string]logrus.Level
+		Handler             func(t *testing.T) HandlerFunc
+		Path                string
+		Method              string
+		Host                string
+		Headers             map[string]string
+		Context             func(context.Context) context.Context
+		Env                 map[string]string
+		ExpectedLevel       logrus.Level
+		ExpectedFieldValues map[string]string
+		ExpectedFields      []string
 	}{
 		{
 			Name:           "HTTP GET / on example.dev without any additional info",
@@ -33,6 +34,22 @@ func TestLoggingMiddleware_Apply(t *testing.T) {
 			Method:         "GET",
 			Host:           "example.dev",
 			ExpectedFields: []string{"path", "host", "method"},
+		}, {
+			Name:                "HTTP GET / on example.dev with X-Forwarded-Proto",
+			Path:                "/",
+			Method:              "GET",
+			Host:                "example.dev",
+			Headers:             map[string]string{"X-Forwarded-For": "10.11.12.13"},
+			ExpectedFieldValues: map[string]string{"from": "10.11.12.13"},
+			ExpectedFields:      []string{"path", "host", "method", "from"},
+		}, {
+			Name:                "HTTP GET / on example.dev with X-Forwarded-Proto",
+			Path:                "/",
+			Method:              "GET",
+			Host:                "example.dev",
+			Headers:             map[string]string{"X-Forwarded-Proto": "https"},
+			ExpectedFieldValues: map[string]string{"protocol": "https"},
+			ExpectedFields:      []string{"path", "host", "method", "protocol"},
 		}, {
 			Name:           "with user agent",
 			Path:           "/",
@@ -164,11 +181,25 @@ func TestLoggingMiddleware_Apply(t *testing.T) {
 			assert.Equal(t, expectedLevel, hook.Entries[1].Level)
 
 			log1Keys := []string{}
-			for k, _ := range hook.Entries[0].Data {
+			for k, v := range hook.Entries[0].Data {
+				if example.ExpectedFieldValues != nil {
+					for ek, ev := range example.ExpectedFieldValues {
+						if k == ek {
+							assert.Equal(t, ev, v)
+						}
+					}
+				}
 				log1Keys = append(log1Keys, k)
 			}
 			log2Keys := []string{}
-			for k, _ := range hook.Entries[1].Data {
+			for k, v := range hook.Entries[1].Data {
+				if example.ExpectedFieldValues != nil {
+					for ek, ev := range example.ExpectedFieldValues {
+						if k == ek {
+							assert.Equal(t, ev, v)
+						}
+					}
+				}
 				log2Keys = append(log2Keys, k)
 			}
 
