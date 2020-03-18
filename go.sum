@@ -1,5 +1,7 @@
 github.com/Scalingo/go-utils v5.5.9+incompatible h1:lA6ltog6RZ/OJNvhQVC80Ao3cBsT9tPFUT5jUnYr7d0=
 github.com/Scalingo/go-utils v5.5.9+incompatible/go.mod h1:YcispJL9BCnNJwWxspalrRQ6zHAYPyNSnDLlfdfhxt8=
+github.com/Scalingo/go-utils v5.7.0+incompatible h1:AVQ9t1HlbeE88oj2Yv4fkwcSH0LqC9Tbjs0VrdLaPWo=
+github.com/Scalingo/go-utils v5.7.0+incompatible/go.mod h1:YcispJL9BCnNJwWxspalrRQ6zHAYPyNSnDLlfdfhxt8=
 github.com/codegangsta/negroni v1.0.0 h1:+aYywywx4bnKXWvoWtRfJ91vC59NbEhEY03sZjQhbVY=
 github.com/codegangsta/negroni v1.0.0/go.mod h1:v0y3T5G7Y1UlFfyxFn/QLRU4a2EuNau2iZY63YTKWo0=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
