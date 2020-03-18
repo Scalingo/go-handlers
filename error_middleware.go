@@ -67,11 +67,11 @@ func writeError(w negroni.ResponseWriter, err error) {
 
 	if w.Header().Get("Content-Type") == "application/json" {
 		if isCauseValidationErrors {
-			_ = json.NewEncoder(w).Encode(errors.RootCause(err))
+			json.NewEncoder(w).Encode(errors.RootCause(err))
 		} else {
-			_ = json.NewEncoder(w).Encode(&(map[string]string{"error": err.Error()}))
+			json.NewEncoder(w).Encode(&(map[string]string{"error": err.Error()}))
 		}
 	} else {
-		_, _ = fmt.Fprintln(w, err)
+		fmt.Fprintln(w, err)
 	}
 }
