@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"runtime/debug"
 
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/negroni"
+
 	"github.com/Scalingo/go-utils/errors"
 	"github.com/Scalingo/go-utils/logger"
-	"github.com/codegangsta/negroni"
-	"github.com/sirupsen/logrus"
 )
 
 var ErrorMiddleware MiddlewareFunc = MiddlewareFunc(func(handler HandlerFunc) HandlerFunc {

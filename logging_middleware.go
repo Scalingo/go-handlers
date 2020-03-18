@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/codegangsta/negroni"
 	"github.com/sirupsen/logrus"
+	"github.com/urfave/negroni"
 )
 
 var (
