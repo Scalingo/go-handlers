@@ -1,5 +1,7 @@
 module github.com/Scalingo/go-handlers
 
+go 1.14
+
 require (
 	github.com/Scalingo/go-utils v5.5.9+incompatible
 	github.com/codegangsta/negroni v1.0.0
