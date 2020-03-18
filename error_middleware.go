@@ -30,7 +30,7 @@ var ErrorMiddleware MiddlewareFunc = MiddlewareFunc(func(handler HandlerFunc) Ha
 				}
 				log.WithError(err).Error("recover panic")
 				w.WriteHeader(500)
-				_, _ = fmt.Fprintln(w, err)
+				fmt.Fprintln(w, err)
 			}
 		}()
 
