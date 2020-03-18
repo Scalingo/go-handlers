@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/Scalingo/go-utils/errors"
-	"github.com/Scalingo/go-utils/logger"
 	"github.com/codegangsta/negroni"
 	"github.com/sirupsen/logrus"
+
+	"github.com/Scalingo/go-utils/errors"
+	"github.com/Scalingo/go-utils/logger"
 )
 
 var ErrorMiddleware MiddlewareFunc = MiddlewareFunc(func(handler HandlerFunc) HandlerFunc {
@@ -29,7 +30,7 @@ var ErrorMiddleware MiddlewareFunc = MiddlewareFunc(func(handler HandlerFunc) Ha
 				}
 				log.WithError(err).Error("recover panic")
 				w.WriteHeader(500)
-				fmt.Fprintln(w, err)
+				_, _ = fmt.Fprintln(w, err)
 			}
 		}()
 
@@ -66,11 +67,11 @@ func writeError(w negroni.ResponseWriter, err error) {
 
 	if w.Header().Get("Content-Type") == "application/json" {
 		if isCauseValidationErrors {
-			json.NewEncoder(w).Encode(errors.RootCause(err))
+			_ = json.NewEncoder(w).Encode(&(map[string]string{"error": errors.RootCause(err).Error()}))
 		} else {
-			json.NewEncoder(w).Encode(&(map[string]string{"error": err.Error()}))
+			_ = json.NewEncoder(w).Encode(&(map[string]string{"error": err.Error()}))
 		}
 	} else {
-		fmt.Fprintln(w, err)
+		_, _ = fmt.Fprintln(w, err)
 	}
 }
