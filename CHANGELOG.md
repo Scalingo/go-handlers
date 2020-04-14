@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.0 - 14 Apr 2019
+
+* Update all dependencies
+* Use github.com/gofrs/uuid instead of unsecure github.com/satori/go.uuid
+
 ## v1.2.6 - 5 Jul 2019
 
 * Change UUID generation lib
