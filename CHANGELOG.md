@@ -1,5 +1,11 @@
 # Changelog
 
+## To be Released
+
+* Bump github.com/stretchr/testify from 1.5.1 to 1.7.0 #24
+* Bump github.com/gorilla/mux from 1.7.4 to 1.8.0 #25
+* Bump github.com/gofrs/uuid from 3.2.0+incompatible to 3.4.0+incompatible #26
+
 ## v1.3.0 - 14 Apr 2019
 
 * Update all dependencies
