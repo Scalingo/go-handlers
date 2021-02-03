@@ -2,6 +2,11 @@
 
 ## To be Released
 
+## v1.4.0
+
+* Don't return an invalid auth error for AuthMiddleware and add the ability to encode the error in json instead of text
+  [#27](https://github.com/Scalingo/go-handlers/pull/27)
+
 ## v1.3.1
 
 * Bump github.com/stretchr/testify from 1.5.1 to 1.7.0 #24
