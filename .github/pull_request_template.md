@@ -1,0 +1,2 @@
+- [ ] Add a changelog entry in the `CHANGELOG.md` file, in the "To be Released" section.
+- [ ] As much as possible, do not deprecate parameters. Only add new parameters.
