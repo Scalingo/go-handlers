@@ -42,15 +42,15 @@ var ErrorMiddleware MiddlewareFunc = MiddlewareFunc(func(handler HandlerFunc) Ha
 		}
 
 		if err != nil {
-			log.WithField("error", err).Error("Request error")
-			writeError(rw, err)
+			log = log.WithField("error", err)
+			writeError(log, rw, err)
 		}
 
 		return err
 	}
 })
 
-func writeError(w negroni.ResponseWriter, err error) {
+func writeError(log logrus.FieldLogger, w negroni.ResponseWriter, err error) {
 	if w.Header().Get("Content-Type") == "" {
 		w.Header().Set("Content-Type", "text/plain")
 	}
@@ -67,8 +67,10 @@ func writeError(w negroni.ResponseWriter, err error) {
 
 	if w.Header().Get("Content-Type") == "application/json" {
 		if isCauseValidationErrors {
+			log.Info("Request validation error")
 			json.NewEncoder(w).Encode(errors.RootCause(err))
 		} else {
+			log.Error("Request error")
 			json.NewEncoder(w).Encode(&(map[string]string{"error": err.Error()}))
 		}
 	} else {
