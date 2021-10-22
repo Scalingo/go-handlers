@@ -7,13 +7,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	errorutils "github.com/Scalingo/go-utils/errors"
-	"github.com/Scalingo/go-utils/logger"
 	pkgerrors "github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	pkgtest "github.com/sirupsen/logrus/hooks/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	errorutils "github.com/Scalingo/go-utils/errors"
+	"github.com/Scalingo/go-utils/logger"
 )
 
 func TestErrorMiddlware(t *testing.T) {
@@ -37,8 +38,7 @@ func TestErrorMiddlware(t *testing.T) {
 		},
 		"it should set the status code to 422 if this is a ValidationErrors": {
 			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
-				var err error
-				err = (&errorutils.ValidationErrors{
+				err := (&errorutils.ValidationErrors{
 					Errors: map[string][]string{
 						"test": []string{"biniou"},
 					},

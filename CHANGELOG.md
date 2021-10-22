@@ -3,6 +3,7 @@
 ## To be Released
 
 * Bump github.com/sirupsen/logrus from 1.7.0 to 1.8.1
+* fix(error_middleware): ValidationError shouldn't be logged as Error
 
 ## v1.4.0
 
