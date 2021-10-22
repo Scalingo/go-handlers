@@ -57,8 +57,10 @@ func writeError(log logrus.FieldLogger, w negroni.ResponseWriter, err error) {
 
 	isCauseValidationErrors := errors.IsRootCause(err, &errors.ValidationErrors{})
 	if isCauseValidationErrors {
+		log.Info("Request validation error")
 		w.WriteHeader(422)
 	} else if w.Status() == 0 {
+		log.Error("Request error")
 		// If the status is 0, it means WriteHeader has not been called and we've to
 		// write it, otherwise it has been done in the handler with another response
 		// code.
@@ -67,10 +69,8 @@ func writeError(log logrus.FieldLogger, w negroni.ResponseWriter, err error) {
 
 	if w.Header().Get("Content-Type") == "application/json" {
 		if isCauseValidationErrors {
-			log.Info("Request validation error")
 			json.NewEncoder(w).Encode(errors.RootCause(err))
 		} else {
-			log.Error("Request error")
 			json.NewEncoder(w).Encode(&(map[string]string{"error": err.Error()}))
 		}
 	} else {
