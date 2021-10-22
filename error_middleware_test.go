@@ -38,8 +38,7 @@ func TestErrorMiddlware(t *testing.T) {
 		},
 		"it should set the status code to 422 if this is a ValidationErrors": {
 			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
-				var err error
-				err = (&errorutils.ValidationErrors{
+				err := (&errorutils.ValidationErrors{
 					Errors: map[string][]string{
 						"test": []string{"biniou"},
 					},
