@@ -7,13 +7,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	errorutils "github.com/Scalingo/go-utils/errors"
-	"github.com/Scalingo/go-utils/logger"
 	pkgerrors "github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	pkgtest "github.com/sirupsen/logrus/hooks/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	errorutils "github.com/Scalingo/go-utils/errors"
+	"github.com/Scalingo/go-utils/logger"
 )
 
 func TestErrorMiddlware(t *testing.T) {
