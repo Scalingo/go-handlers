@@ -28,7 +28,7 @@ var ErrorMiddleware MiddlewareFunc = MiddlewareFunc(func(handler HandlerFunc) Ha
 				if !ok {
 					err = stderr.New(rec.(string))
 				}
-				log.WithError(err).Error("recover panic")
+				log.WithError(err).Error("Recover panic")
 				w.WriteHeader(500)
 				fmt.Fprintln(w, err)
 			}
@@ -42,7 +42,7 @@ var ErrorMiddleware MiddlewareFunc = MiddlewareFunc(func(handler HandlerFunc) Ha
 		}
 
 		if err != nil {
-			log.WithField("error", err).Error("request error")
+			log.WithField("error", err).Error("Request error")
 			writeError(rw, err)
 		}
 
