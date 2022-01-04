@@ -65,6 +65,18 @@ func TestErrorMiddlware(t *testing.T) {
 			statusCode:   500,
 			expectedBody: "{\"error\":\"wrapping: error\"}\n",
 		},
+		"it should add the Content-Type plain text if none is specified": {
+			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+				log := logger.Get(r.Context()).WithField("field", "value")
+				return errorutils.Wrapf(logger.ToCtx(context.Background(), log), errors.New("error"), "wrapping")
+			},
+			assertLogs: func(t *testing.T, hook *pkgtest.Hook) {
+				require.Equal(t, 1, len(hook.Entries))
+				assert.Equal(t, "value", hook.Entries[0].Data["field"])
+			},
+			statusCode:   500,
+			expectedBody: "wrapping: error\n",
+		},
 	}
 
 	for msg, test := range tests {
