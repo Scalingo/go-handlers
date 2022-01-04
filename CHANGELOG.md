@@ -2,6 +2,7 @@
 
 ## To be Released
 
+* fix(error_middleware): better detection of JSON Content-Type
 * Bump github.com/gofrs/uuid from 4.1.0+incompatible to 4.2.0+incompatible
 
 ## v1.4.1

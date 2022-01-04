@@ -19,12 +19,14 @@ import (
 
 func TestErrorMiddlware(t *testing.T) {
 	tests := map[string]struct {
+		contentType  string
 		handlerFunc  HandlerFunc
 		assertLogs   func(*testing.T, *pkgtest.Hook)
 		statusCode   int
 		expectedBody string
 	}{
 		"it should set the status code to 500 if there is none": {
+			contentType: "application/json",
 			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
 				log := logger.Get(r.Context()).WithField("field", "value")
 				return errorutils.Wrapf(logger.ToCtx(context.Background(), log), errors.New("error"), "wrapping")
@@ -37,6 +39,7 @@ func TestErrorMiddlware(t *testing.T) {
 			expectedBody: "{\"error\":\"wrapping: error\"}\n",
 		},
 		"it should set the status code to 422 if this is a ValidationErrors": {
+			contentType: "application/json",
 			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
 				err := (&errorutils.ValidationErrors{
 					Errors: map[string][]string{
@@ -48,6 +51,19 @@ func TestErrorMiddlware(t *testing.T) {
 			},
 			statusCode:   422,
 			expectedBody: "{\"errors\":{\"test\":[\"biniou\"]}}\n",
+		},
+		"it should detect any Content-Type ending with +json as JSON": {
+			contentType: "application/vnd.docker.plugins.v1.1+json",
+			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+				log := logger.Get(r.Context()).WithField("field", "value")
+				return errorutils.Wrapf(logger.ToCtx(context.Background(), log), errors.New("error"), "wrapping")
+			},
+			assertLogs: func(t *testing.T, hook *pkgtest.Hook) {
+				require.Equal(t, 1, len(hook.Entries))
+				assert.Equal(t, "value", hook.Entries[0].Data["field"])
+			},
+			statusCode:   500,
+			expectedBody: "{\"error\":\"wrapping: error\"}\n",
 		},
 	}
 
@@ -61,7 +77,7 @@ func TestErrorMiddlware(t *testing.T) {
 
 			ctx := logger.ToCtx(context.Background(), log)
 			w := httptest.NewRecorder()
-			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Content-Type", test.contentType)
 			r := httptest.NewRequest("GET", "/", nil).WithContext(ctx)
 
 			err := handler(w, r, map[string]string{})
