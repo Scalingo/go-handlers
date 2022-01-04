@@ -68,6 +68,11 @@ func writeError(log logrus.FieldLogger, w negroni.ResponseWriter, err error) {
 		w.WriteHeader(500)
 	}
 
+	// If the body has already been partially written, do not write anything else
+	if w.Size() != 0 {
+		return
+	}
+
 	if isContentTypeJSON(w.Header().Get("Content-Type")) {
 		if isCauseValidationErrors {
 			json.NewEncoder(w).Encode(errors.RootCause(err))

@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,11 +20,11 @@ import (
 
 func TestErrorMiddlware(t *testing.T) {
 	tests := map[string]struct {
-		contentType  string
-		handlerFunc  HandlerFunc
-		assertLogs   func(*testing.T, *pkgtest.Hook)
-		statusCode   int
-		expectedBody string
+		contentType        string
+		handlerFunc        HandlerFunc
+		assertLogs         func(*testing.T, *pkgtest.Hook)
+		expectedStatusCode int
+		expectedBody       string
 	}{
 		"it should set the status code to 500 if there is none": {
 			contentType: "application/json",
@@ -35,8 +36,8 @@ func TestErrorMiddlware(t *testing.T) {
 				require.Equal(t, 1, len(hook.Entries))
 				assert.Equal(t, "value", hook.Entries[0].Data["field"])
 			},
-			statusCode:   500,
-			expectedBody: "{\"error\":\"wrapping: error\"}\n",
+			expectedStatusCode: 500,
+			expectedBody:       "{\"error\":\"wrapping: error\"}\n",
 		},
 		"it should set the status code to 422 if this is a ValidationErrors": {
 			contentType: "application/json",
@@ -49,8 +50,8 @@ func TestErrorMiddlware(t *testing.T) {
 
 				return pkgerrors.Wrap(err, "biniou")
 			},
-			statusCode:   422,
-			expectedBody: "{\"errors\":{\"test\":[\"biniou\"]}}\n",
+			expectedStatusCode: 422,
+			expectedBody:       "{\"errors\":{\"test\":[\"biniou\"]}}\n",
 		},
 		"it should detect any Content-Type ending with +json as JSON": {
 			contentType: "application/vnd.docker.plugins.v1.1+json",
@@ -62,8 +63,8 @@ func TestErrorMiddlware(t *testing.T) {
 				require.Equal(t, 1, len(hook.Entries))
 				assert.Equal(t, "value", hook.Entries[0].Data["field"])
 			},
-			statusCode:   500,
-			expectedBody: "{\"error\":\"wrapping: error\"}\n",
+			expectedStatusCode: 500,
+			expectedBody:       "{\"error\":\"wrapping: error\"}\n",
 		},
 		"it should add the Content-Type plain text if none is specified": {
 			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
@@ -74,8 +75,18 @@ func TestErrorMiddlware(t *testing.T) {
 				require.Equal(t, 1, len(hook.Entries))
 				assert.Equal(t, "value", hook.Entries[0].Data["field"])
 			},
-			statusCode:   500,
-			expectedBody: "wrapping: error\n",
+			expectedStatusCode: 500,
+			expectedBody:       "wrapping: error\n",
+		},
+		"it should not write anything in the body if it has already been written": {
+			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+				w.WriteHeader(500)
+				// My handler writes something in the body but returns an error
+				fmt.Fprintln(w, "biniou")
+				return errors.New("my error")
+			},
+			expectedStatusCode: 500,
+			expectedBody:       "biniou\n",
 		},
 	}
 
@@ -98,7 +109,7 @@ func TestErrorMiddlware(t *testing.T) {
 			if test.assertLogs != nil {
 				test.assertLogs(t, hook)
 			}
-			assert.Equal(t, test.statusCode, w.Code)
+			assert.Equal(t, test.expectedStatusCode, w.Code)
 			assert.Equal(t, test.expectedBody, w.Body.String())
 		})
 	}
