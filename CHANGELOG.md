@@ -1,6 +1,6 @@
 # Changelog
 
-## To be Released
+## v1.4.2
 
 * fix(error_middleware): better detection of JSON Content-Type
 * fix(error_middleware): do not write a body if it has already been written
