@@ -88,6 +88,18 @@ func TestErrorMiddlware(t *testing.T) {
 			expectedStatusCode: 500,
 			expectedBody:       "biniou\n",
 		},
+		"it should log the error for all 5xx status code": {
+			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+				w.WriteHeader(502)
+				log := logger.Get(r.Context()).WithField("field", "value")
+				return errorutils.Wrapf(logger.ToCtx(context.Background(), log), errors.New("error"), "wrapping")
+			},
+			assertLogs: func(t *testing.T, hook *pkgtest.Hook) {
+				require.Equal(t, 1, len(hook.Entries))
+				assert.Equal(t, "value", hook.Entries[0].Data["field"])
+			},
+			expectedStatusCode: 502,
+		},
 	}
 
 	for msg, test := range tests {
@@ -109,8 +121,10 @@ func TestErrorMiddlware(t *testing.T) {
 			if test.assertLogs != nil {
 				test.assertLogs(t, hook)
 			}
+			if test.expectedBody != "" {
+				assert.Equal(t, test.expectedBody, w.Body.String())
+			}
 			assert.Equal(t, test.expectedStatusCode, w.Code)
-			assert.Equal(t, test.expectedBody, w.Body.String())
 		})
 	}
 }

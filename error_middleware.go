@@ -61,11 +61,14 @@ func writeError(log logrus.FieldLogger, w negroni.ResponseWriter, err error) {
 		log.Info("Request validation error")
 		w.WriteHeader(422)
 	} else if w.Status() == 0 {
-		log.Error("Request error")
 		// If the status is 0, it means WriteHeader has not been called and we've to
 		// write it, otherwise it has been done in the handler with another response
 		// code.
 		w.WriteHeader(500)
+	}
+
+	if w.Status()/100 == 5 {
+		log.Error("Request error")
 	}
 
 	// If the body has already been partially written, do not write anything else
