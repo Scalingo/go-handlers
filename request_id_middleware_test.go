@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRequestIDMiddleware(t *testing.T) {
@@ -54,7 +55,8 @@ func TestRequestIDMiddleware(t *testing.T) {
 					assert.Equal(t, expectedUUID, id)
 				}
 				assert.NotEmpty(t, id)
-				ctxValue := r.Context().Value("request_id").(string)
+				ctxValue, ok := r.Context().Value("request_id").(string)
+				require.True(t, ok)
 				assert.Equal(t, id, ctxValue)
 
 				return nil

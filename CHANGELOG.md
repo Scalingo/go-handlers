@@ -1,5 +1,9 @@
 # Changelog
 
+## To be Released
+
+* feat(error_middleware): log and error for all 5xx status code
+
 ## v1.4.2
 
 * fix(error_middleware): better detection of JSON Content-Type
