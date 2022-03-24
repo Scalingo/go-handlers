@@ -44,7 +44,7 @@ func TestErrorMiddlware(t *testing.T) {
 			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
 				err := (&errorutils.ValidationErrors{
 					Errors: map[string][]string{
-						"test": []string{"biniou"},
+						"test": {"biniou"},
 					},
 				})
 

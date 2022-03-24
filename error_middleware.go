@@ -15,7 +15,7 @@ import (
 	"github.com/Scalingo/go-utils/logger"
 )
 
-var ErrorMiddleware MiddlewareFunc = MiddlewareFunc(func(handler HandlerFunc) HandlerFunc {
+var ErrorMiddleware = MiddlewareFunc(func(handler HandlerFunc) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
 		log, ok := r.Context().Value("logger").(logrus.FieldLogger)
 		if !ok {
@@ -76,14 +76,18 @@ func writeError(log logrus.FieldLogger, w negroni.ResponseWriter, err error) {
 		return
 	}
 
-	if isContentTypeJSON(w.Header().Get("Content-Type")) {
-		if isCauseValidationErrors {
-			json.NewEncoder(w).Encode(errors.RootCause(err))
-		} else {
-			json.NewEncoder(w).Encode(&(map[string]string{"error": err.Error()}))
-		}
-	} else {
+	if !isContentTypeJSON(w.Header().Get("Content-Type")) {
 		fmt.Fprintln(w, err)
+		return
+	}
+	if !isCauseValidationErrors {
+		json.NewEncoder(w).Encode(&(map[string]string{"error": err.Error()}))
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(errors.RootCause(err))
+	if err != nil {
+		log.WithError(err).Error("Fail to encode the validation error root cause to JSON")
 	}
 }
 
