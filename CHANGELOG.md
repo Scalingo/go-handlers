@@ -2,6 +2,8 @@
 
 ## To be Released
 
+* Bump github.com/stretchr/testify from 1.7.0 to 1.7.1
+
 ## v1.4.3
 
 * feat(error_middleware): log and error for all 5xx status code
