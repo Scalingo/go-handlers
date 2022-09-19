@@ -43,7 +43,7 @@ var ErrorMiddleware = MiddlewareFunc(func(handler HandlerFunc) HandlerFunc {
 		}
 
 		if err != nil {
-			log = log.WithField("error", err)
+			log = log.WithError(err)
 			writeError(log, rw, err)
 		}
 
