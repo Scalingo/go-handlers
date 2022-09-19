@@ -58,7 +58,6 @@ func writeError(log logrus.FieldLogger, w negroni.ResponseWriter, err error) {
 
 	isCauseValidationErrors := errors.IsRootCause(err, &errors.ValidationErrors{})
 	if isCauseValidationErrors {
-		log.Info("Request validation error")
 		w.WriteHeader(422)
 	} else if w.Status() == 0 {
 		// If the status is 0, it means WriteHeader has not been called and we've to
@@ -67,8 +66,14 @@ func writeError(log logrus.FieldLogger, w negroni.ResponseWriter, err error) {
 		w.WriteHeader(500)
 	}
 
+	// We log at error level for all 5xx errors as it means there has been an internal service error. With this logging level, we send a Rollbar error.
+	// In all other cases, we log at info level. The status code is most probably a 4xx (i.e. due to a user issue). We don't want a Rollbar error in this case but still want to be informed in the logs.
 	if w.Status()/100 == 5 {
 		log.Error("Request error")
+	} else if isCauseValidationErrors {
+		log.Info("Request validation error")
+	} else {
+		log.Info("Request error")
 	}
 
 	// If the body has already been partially written, do not write anything else
