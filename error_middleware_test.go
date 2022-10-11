@@ -16,6 +16,7 @@ import (
 
 	errorutils "github.com/Scalingo/go-utils/errors"
 	"github.com/Scalingo/go-utils/logger"
+	"github.com/Scalingo/go-utils/security"
 )
 
 func TestErrorMiddlware(t *testing.T) {
@@ -52,6 +53,15 @@ func TestErrorMiddlware(t *testing.T) {
 			},
 			expectedStatusCode: 422,
 			expectedBody:       "{\"errors\":{\"test\":[\"biniou\"]}}\n",
+		},
+		"it should set the status code to 401 if this is an error due to an invalidity token": {
+			contentType: "application/json",
+			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+				err := security.ErrFutureTimestamp
+				return pkgerrors.Wrap(err, "biniou")
+			},
+			expectedStatusCode: 401,
+			expectedBody:       "{\"error\":\"biniou: invalid timestamp in the future\"}\n",
 		},
 		"it should detect any Content-Type ending with +json as JSON": {
 			contentType: "application/vnd.docker.plugins.v1.1+json",

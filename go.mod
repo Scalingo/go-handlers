@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/Scalingo/go-utils/errors v1.1.1
 	github.com/Scalingo/go-utils/logger v1.2.0
+	github.com/Scalingo/go-utils/security v1.0.0
 	github.com/gofrs/uuid v4.3.0+incompatible
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1
@@ -14,6 +15,7 @@ require (
 )
 
 require (
+	github.com/Scalingo/go-utils/crypto v1.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
