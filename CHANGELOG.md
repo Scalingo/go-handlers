@@ -2,6 +2,8 @@
 
 ## To be Released
 
+* feat(error_middleware): return 401 for invalid token errors
+
 ## v1.4.5
 
 * feat(error_middleware): log at info level for all non-5xx errors
