@@ -3,6 +3,7 @@
 ## To be Released
 
 * feat(error_middleware): return 401 for invalid token errors
+* chore(deps): bump github.com/stretchr/testify from 1.8.0 to 1.8.1
 
 ## v1.4.5
 
