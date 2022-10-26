@@ -1,5 +1,5 @@
 dependencies = []
-description = "Define a custom Handler and router based on gorilla + negroni with easy integration of middlewares"
+description = "Define a custom handler and router based on gorilla + negroni with easy integration of middlewares"
 flags = ["lib"]
 languages = ["go"]
 owner = "etienne@scalingo.com"
