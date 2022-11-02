@@ -2,6 +2,8 @@
 
 ## To be Released
 
+* chore(deps): bump github.com/gofrs/uuid from 4.3.0+incompatible to 4.3.1+incompatible
+
 ## v1.5.0
 
 * feat(error_middleware): return 401 for invalid token errors
