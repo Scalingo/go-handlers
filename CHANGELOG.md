@@ -3,6 +3,7 @@
 ## To be Released
 
 * chore(deps): bump github.com/gofrs/uuid from 4.3.0+incompatible to 4.3.1+incompatible
+* feat(error_middleware): use RootCtxOrFallback to retrieve ctx and get its logger
 
 ## v1.5.0
 
