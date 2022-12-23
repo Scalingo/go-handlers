@@ -102,11 +102,11 @@ Bump new version number in `CHANGELOG.md` and `README.md`.
 Commit, tag and create a new release:
 
 ```sh
-version="v1.6.0"
+version="1.6.0"
 
 git switch --create release/${version}
 git add CHANGELOG.md README.md
-git commit -m "Bump ${version}"
+git commit -m "Bump v${version}"
 git push --set-upstream origin release/${version}
 gh pr create --reviewer=EtienneM --title "$(git log -1 --pretty=%B)"
 ```
