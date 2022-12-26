@@ -15,13 +15,13 @@ import (
 const PprofRoutePrefix = "/debug/pprof"
 
 type profiling struct {
-	Enable bool
-	Auth   authentication
+	enable bool
+	auth   pprofAuthentication
 }
 
-type authentication struct {
-	Username string
-	Password string
+type pprofAuthentication struct {
+	username string
+	password string
 }
 
 func NewProfilingRouter(ctx context.Context) (*Router, error) {
@@ -31,11 +31,12 @@ func NewProfilingRouter(ctx context.Context) (*Router, error) {
 
 	err := prof.initialize()
 	if err != nil {
-		return &Router{}, errgo.Notef(err, "fail to initialize pprof profiling")
+		return nil, errgo.Notef(err, "fail to initialize pprof profiling")
 	}
 
 	if !prof.isActivable() {
-		return &Router{}, nil
+		log.Info("Profiling router is not activable")
+		return new(Router), nil
 	}
 
 	r := NewRouter(log)
@@ -43,7 +44,7 @@ func NewProfilingRouter(ctx context.Context) (*Router, error) {
 	log.Info("Add basic authentication middleware to access profiling routes")
 	r.Use(ErrorMiddleware)
 	r.Use(AuthMiddleware(func(user, password string) bool {
-		return user == prof.Auth.Username && password == prof.Auth.Password
+		return user == prof.auth.username && password == prof.auth.password
 	}))
 
 	log.Info("Enabling pprof endpoints under " + PprofRoutePrefix)
@@ -64,24 +65,24 @@ func NewProfilingRouter(ctx context.Context) (*Router, error) {
 }
 
 func (prof *profiling) initialize() error {
-	profEnable := os.Getenv("PPROF_ENABLED")
-	if profEnable == "" {
+	pprofEnable := os.Getenv("PPROF_ENABLED")
+	if pprofEnable == "" {
 		return nil
 	}
 
 	var err error
-	prof.Enable, err = strconv.ParseBool(profEnable)
+	prof.enable, err = strconv.ParseBool(pprofEnable)
 	if err != nil {
-		return errgo.Notef(err, "fail to parse environment variable to enable profiling")
+		return errgo.Notef(err, "fail to parse environment variable PPROF_ENABLED")
 	}
-	prof.Auth.Username = os.Getenv("PPROF_USERNAME")
-	prof.Auth.Password = os.Getenv("PPROF_PASSWORD")
+	prof.auth.username = os.Getenv("PPROF_USERNAME")
+	prof.auth.password = os.Getenv("PPROF_PASSWORD")
 
 	return nil
 }
 
 func (prof *profiling) isActivable() bool {
-	return prof.Enable && prof.Auth.Username != "" && prof.Auth.Password != ""
+	return prof.enable && prof.auth.username != "" && prof.auth.password != ""
 }
 
 func index(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
