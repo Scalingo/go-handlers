@@ -1,17 +1,20 @@
 package handlers
 
 import (
-	"errors"
 	"net/http"
+
+	"github.com/Scalingo/go-utils/logger"
 )
 
-func EnforceHTTPSMiddleware(next HandlerFunc) HandlerFunc {
+var EnforceHTTPSMiddleware = MiddlewareFunc(func(handler HandlerFunc) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
-		auth := r.Header.Get("X-Forwarded-Proto")
-		if auth != "https" {
-			w.WriteHeader(401)
-			return errors.New("no https header")
+		forwardedProto := r.Header.Get("X-Forwarded-Proto")
+		if forwardedProto != "https" {
+			w.WriteHeader(400)
+			log := logger.Get(r.Context())
+			log.Info("HTTP request received on HTTPS only endpoint")
+			return nil
 		}
-		return next(w, r, vars)
+		return handler(w, r, vars)
 	}
-}
+})
