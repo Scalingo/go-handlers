@@ -6,7 +6,7 @@ import (
 	"github.com/Scalingo/go-utils/logger"
 )
 
-var EnforceHTTPSMiddleware = MiddlewareFunc(func(handler HandlerFunc) HandlerFunc {
+var RejectHTTPMiddleware = MiddlewareFunc(func(handler HandlerFunc) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
 		forwardedProto := r.Header.Get("X-Forwarded-Proto")
 		if forwardedProto != "https" {
