@@ -3,6 +3,7 @@
 ## To be Released
 
 * feat(middleware): add a middleware to reject HTTP request
+* feat(middleware): Add secure headers middleware
 
 ## v1.7.0
 
