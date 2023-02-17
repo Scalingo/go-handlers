@@ -118,6 +118,7 @@ Once the pull request merged, you can tag the new release.
 ```bash
 git tag v${version}
 git push origin master v${version}
+gh release create v${version}
 ```
 
 The title of the release should be the version number and the text of the release is the same as the changelog.
