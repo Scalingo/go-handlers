@@ -2,6 +2,8 @@
 
 ## To be Released
 
+## v1.8.0
+
 * feat(middleware): add a middleware to reject HTTP request
 * feat(middleware): Add secure headers middleware
 
