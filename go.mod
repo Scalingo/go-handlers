@@ -6,7 +6,7 @@ require (
 	github.com/Scalingo/go-utils/errors/v2 v2.3.0
 	github.com/Scalingo/go-utils/logger v1.2.0
 	github.com/Scalingo/go-utils/security v1.0.0
-	github.com/gofrs/uuid v4.4.0+incompatible
+	github.com/gofrs/uuid/v5 v5.0.0
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.2
