@@ -54,6 +54,20 @@ func TestErrorMiddlware(t *testing.T) {
 			expectedStatusCode: 422,
 			expectedBody:       "{\"errors\":{\"test\":[\"biniou\"]}}\n",
 		},
+		"it should set the status code to 400 if this is a BadRequestError": {
+			contentType: "application/json",
+			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+				err := (&BadRequestError{
+					Errors: map[string][]string{
+						"per_page": {"must be greater than 0"},
+					},
+				})
+
+				return pkgerrors.Wrap(err, "biniou")
+			},
+			expectedStatusCode: 400,
+			expectedBody:       "{\"error\":\"biniou: * per_page → must be greater than 0\"}\n",
+		},
 		"it should set the status code to 401 if this is an error due to an invalidity token": {
 			contentType: "application/json",
 			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {

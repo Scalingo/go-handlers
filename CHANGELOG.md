@@ -2,6 +2,8 @@
 
 ## To be Released
 
+feat(errors): add bad request errors
+
 ## v1.8.0
 
 * feat(middleware): add a middleware to reject HTTP request
