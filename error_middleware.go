@@ -58,8 +58,11 @@ func writeError(log logrus.FieldLogger, w negroni.ResponseWriter, err error) {
 	}
 
 	isCauseValidationErrors := errors.IsRootCause(err, &errors.ValidationErrors{})
+	isCausePaginationBadRequest := errors.IsRootCause(err, &BadRequestError{})
 	if isCauseValidationErrors {
 		w.WriteHeader(422)
+	} else if isCausePaginationBadRequest {
+		w.WriteHeader(400)
 	} else if w.Status() == 0 {
 		// If the status is 0, it means WriteHeader has not been called and we've to
 		// write it. Otherwise it has been done in the handler with another response
