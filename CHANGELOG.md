@@ -2,7 +2,9 @@
 
 ## To be Released
 
-feat(errors): add bad request errors
+## v1.8.1
+
+* feat(errors): add bad request errors
 
 ## v1.8.0
 
