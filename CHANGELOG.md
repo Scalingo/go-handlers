@@ -2,7 +2,7 @@
 
 ## To be Released
 
-* feat(middleware): add a middleware to set the content-type to application/json
+* feat(middleware): add a middleware to set the `Content-Type` to `application/json`
 
 ## v1.8.1
 
