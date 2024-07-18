@@ -1,4 +1,4 @@
-# Custom Router and Handler v1.8.1
+# Custom Router and Handler v1.8.2
 
 [ ![Codeship Status for Scalingo/go-handlers](https://app.codeship.com/projects/9bd8e5d0-d609-0135-e8d1-2aadb9628cc1/status?branch=master)](https://app.codeship.com/projects/263154)
 
