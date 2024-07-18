@@ -102,7 +102,7 @@ Bump new version number in `CHANGELOG.md` and `README.md`.
 Commit, tag and create a new release:
 
 ```sh
-version="1.8.1"
+version="1.8.2"
 
 git switch --create release/${version}
 git add CHANGELOG.md README.md
