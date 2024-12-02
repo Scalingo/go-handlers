@@ -1,6 +1,6 @@
 module github.com/Scalingo/go-handlers
 
-go 1.20
+go 1.22.9
 
 require (
 	github.com/Scalingo/go-utils/errors/v2 v2.4.0
