@@ -2,6 +2,8 @@
 
 ## To be Released
 
+* build(go.mod): update github.com/urfave/negroni from v1 to v3
+
 ## v1.8.2
 
 * feat(middleware): add a middleware to set the `Content-Type` to `application/json`

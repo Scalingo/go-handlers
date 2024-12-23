@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/sirupsen/logrus"
-	"github.com/urfave/negroni"
+	"github.com/urfave/negroni/v3"
 
 	"github.com/Scalingo/go-utils/errors/v2"
 	"github.com/Scalingo/go-utils/logger"
