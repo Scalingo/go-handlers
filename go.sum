@@ -2,8 +2,8 @@ github.com/Scalingo/go-utils/crypto v1.1.0 h1:Z1JW3PQkN+YtpchuGcmfjtS2YfOGjYA9RA
 github.com/Scalingo/go-utils/crypto v1.1.0/go.mod h1:RqWJw2ikMaK4ul+TtwUfdg+MIJKFaxBvMy11fQdV0RA=
 github.com/Scalingo/go-utils/errors/v2 v2.5.0 h1:aBQF3st7gBS9UbXa8RxkhO1qZb+6e/Ziwdvdf8P+DrA=
 github.com/Scalingo/go-utils/errors/v2 v2.5.0/go.mod h1:aY5TjRfIlqlsKTJGpxuk7AnporNVjn0LdcquXenLwjg=
-github.com/Scalingo/go-utils/logger v1.9.0 h1:djr3YaA7LourAjsZmkgQebtMHQLnHwJz8M1vj9+/8R4=
-github.com/Scalingo/go-utils/logger v1.9.0/go.mod h1:2wzJAC2aOGzpEtKs+PcWhecSe/wVJua8wguDajbk0j0=
+github.com/Scalingo/go-utils/logger v1.6.0 h1:YyorhN7NNN0zsIYFtfgfY0pTSPek2pgppX500O0I7H8=
+github.com/Scalingo/go-utils/logger v1.6.0/go.mod h1:2wzJAC2aOGzpEtKs+PcWhecSe/wVJua8wguDajbk0j0=
 github.com/Scalingo/go-utils/security v1.1.0 h1:+YdMYJTMX2DfEdBm71QC2y3ETQw/HOIBPgJf9IGogrw=
 github.com/Scalingo/go-utils/security v1.1.0/go.mod h1:ihcaMj33FWK/jIRdCfg7rNfF5HLMRdJ87ryDGHI2L84=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
