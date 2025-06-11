@@ -2,7 +2,11 @@
 
 ## To be Released
 
+* build(go.mod): update go to 1.24
+* build(go.mod): update github.com/Scalingo/go-utils/logger to 1.6.0
 * build(go.mod): update github.com/urfave/negroni from v1 to v3
+
+
 
 ## v1.8.2
 
