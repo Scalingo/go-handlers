@@ -1,10 +1,10 @@
 module github.com/Scalingo/go-handlers
 
-go 1.24.3
+go 1.24
 
 require (
 	github.com/Scalingo/go-utils/errors/v2 v2.5.0
-	github.com/Scalingo/go-utils/logger v1.9.0
+	github.com/Scalingo/go-utils/logger v1.6.0
 	github.com/Scalingo/go-utils/security v1.1.0
 	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/gorilla/mux v1.8.1
