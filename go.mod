@@ -16,6 +16,7 @@ require (
 
 require (
 	github.com/Scalingo/go-utils/crypto v1.1.1 // indirect
+	github.com/Scalingo/go-utils/errors/v2 v2.5.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect

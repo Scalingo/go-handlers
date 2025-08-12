@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	v2errors "github.com/Scalingo/go-utils/errors/v2"
 	errorutils "github.com/Scalingo/go-utils/errors/v3"
 	"github.com/Scalingo/go-utils/logger"
 	"github.com/Scalingo/go-utils/security"
@@ -44,6 +45,20 @@ func TestErrorMiddlware(t *testing.T) {
 			contentType: "application/json",
 			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
 				err := (&errorutils.ValidationErrors{
+					Errors: map[string][]string{
+						"test": {"biniou"},
+					},
+				})
+
+				return pkgerrors.Wrap(err, "biniou")
+			},
+			expectedStatusCode: 422,
+			expectedBody:       "{\"errors\":{\"test\":[\"biniou\"]}}\n",
+		},
+		"it should set the status code to 422 if this is a ValidationErrors from go-utils/errors/v2": {
+			contentType: "application/json",
+			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+				err := (&v2errors.ValidationErrors{
 					Errors: map[string][]string{
 						"test": {"biniou"},
 					},
