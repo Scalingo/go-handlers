@@ -3,7 +3,7 @@ module github.com/Scalingo/go-handlers
 go 1.24.3
 
 require (
-	github.com/Scalingo/go-utils/errors/v2 v2.5.1
+	github.com/Scalingo/go-utils/errors/v3 v3.0.0
 	github.com/Scalingo/go-utils/logger v1.9.1
 	github.com/Scalingo/go-utils/security v1.1.1
 	github.com/gofrs/uuid/v5 v5.3.2
