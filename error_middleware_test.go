@@ -23,6 +23,7 @@ import (
 func TestErrorMiddlware(t *testing.T) {
 	tests := map[string]struct {
 		contentType        string
+		accept             string
 		handlerFunc        HandlerFunc
 		assertLogs         func(*testing.T, *pkgtest.Hook)
 		expectedStatusCode int
@@ -117,6 +118,19 @@ func TestErrorMiddlware(t *testing.T) {
 			expectedStatusCode: 500,
 			expectedBody:       "wrapping: error\n",
 		},
+		"it should use JSON if the user accepts JSON": {
+			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
+				log := logger.Get(r.Context()).WithField("field", "value")
+				return errorutils.Wrapf(logger.ToCtx(context.Background(), log), errors.New("error"), "wrapping")
+			},
+			assertLogs: func(t *testing.T, hook *pkgtest.Hook) {
+				require.Equal(t, 1, len(hook.Entries))
+				assert.Equal(t, "value", hook.Entries[0].Data["field"])
+			},
+			accept:             "application/json",
+			expectedStatusCode: 500,
+			expectedBody:       "{\"error\":\"wrapping: error\"}\n",
+		},
 		"it should not write anything in the body if it has already been written": {
 			handlerFunc: func(w http.ResponseWriter, r *http.Request, vars map[string]string) error {
 				w.WriteHeader(500)
@@ -153,6 +167,7 @@ func TestErrorMiddlware(t *testing.T) {
 			w := httptest.NewRecorder()
 			w.Header().Set("Content-Type", test.contentType)
 			r := httptest.NewRequest("GET", "/", nil).WithContext(ctx)
+			r.Header.Set("Accept", test.accept)
 
 			err := handler(w, r, map[string]string{})
 			require.Error(t, err)
