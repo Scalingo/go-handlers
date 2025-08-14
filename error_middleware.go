@@ -46,20 +46,24 @@ var ErrorMiddleware = MiddlewareFunc(func(handler HandlerFunc) HandlerFunc {
 
 		if err != nil {
 			log = log.WithError(err)
-			writeError(log, rw, err)
+			writeError(log, r, rw, err)
 		}
 
 		return err
 	}
 })
 
-func writeError(log logrus.FieldLogger, w negroni.ResponseWriter, err error) {
+func writeError(log logrus.FieldLogger, req *http.Request, w negroni.ResponseWriter, err error) {
 	var validationErrors *errors.ValidationErrors
 	var v2validationErrors *v2errors.ValidationErrors
 	var badRequestError *BadRequestError
 
 	if w.Header().Get("Content-Type") == "" {
-		w.Header().Set("Content-Type", "text/plain")
+		if req != nil && req.Header != nil && isAcceptingJSON(req.Header.Get("Accept")) {
+			w.Header().Set("Content-Type", "application/json")
+		} else {
+			w.Header().Set("Content-Type", "text/plain")
+		}
 	}
 
 	isCauseValidationErrors := errors.As(err, &validationErrors)
@@ -116,7 +120,6 @@ func writeError(log logrus.FieldLogger, w negroni.ResponseWriter, err error) {
 	}
 
 	json.NewEncoder(w).Encode(&(map[string]string{"error": err.Error()}))
-	return
 }
 
 // isContentTypeJSON returns true if the given string is a valid JSON value for the HTTP Content-Type header. Various values can be used to state that a payload is a JSON:
@@ -126,6 +129,32 @@ func writeError(log logrus.FieldLogger, w negroni.ResponseWriter, err error) {
 //     (https://datatracker.ietf.org/doc/html/rfc6839#page-4)
 func isContentTypeJSON(contentType string) bool {
 	return contentType == "application/json" || strings.HasSuffix(contentType, "+json")
+}
+
+// This is a crude way of knowing if the client is accepting JSON as the answer.
+// Content Negotiation algorithm doesn't exist in the golang standard lib (yet: https://github.com/golang/go/issues/19307)
+func isAcceptingJSON(accept string) bool {
+	// If the user did not specify an accept header, we assume they accept everything.
+	// However the old versions of this lib assumed that in case of no headers we'll fallback to plaintext.
+	// Hence to keep this backward compatibility if no headers are present, we return false.
+	if accept == "" {
+		return false
+	}
+
+	accepts := strings.Split(accept, ",")
+	for _, accept := range accepts {
+		accept = strings.TrimSpace(accept)
+		accept = strings.Split(accept, ";")[0] // Remove any parameters
+
+		if accept == "*" ||
+			accept == "*/*" ||
+			accept == "application/*" ||
+			accept == "application/json" ||
+			(strings.HasPrefix(accept, "application/") && strings.HasSuffix(accept, "+json")) {
+			return true
+		}
+	}
+	return false
 }
 
 func isInvalidTokenError(err error) bool {

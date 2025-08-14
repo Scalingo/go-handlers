@@ -6,6 +6,7 @@
 - build(go.mod): update github.com/Scalingo/go-utils/logger to 1.6.0
 - build(go.mod): update github.com/urfave/negroni from v1 to v3
 - build(go.mod): update github.com/Scalingo/go-utils/errors from v2 to v3
+- feature(error_middleware): use JSON if the client accepts it
 
 ## v1.8.2
 
