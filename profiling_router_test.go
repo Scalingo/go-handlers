@@ -5,9 +5,9 @@ import (
 	"encoding/base64"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -194,9 +194,12 @@ func TestProfilingRouterEndpoint(t *testing.T) {
 	}
 }
 
+// isProfilingEnabled checks if the pprof prefix route is registered
 func isProfilingEnabled(profilingRouter *Router) bool {
-	// new(Router) correspond to a nil router
-	return !reflect.DeepEqual(new(Router), profilingRouter)
+	req := httptest.NewRequest(http.MethodGet, PprofRoutePrefix, nil)
+
+	m := &mux.RouteMatch{}
+	return profilingRouter.Match(req, m)
 }
 
 func createLog() context.Context {

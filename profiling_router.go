@@ -48,6 +48,7 @@ func NewProfilingRouter(ctx context.Context) (*Router, error) {
 
 	log.Info("Enabling pprof endpoints under " + PprofRoutePrefix)
 
+	pprofRouter.HandleFunc(PprofRoutePrefix, redirectToIndex)
 	pprofRouter.HandleFunc(PprofRoutePrefix+"/", index)
 	pprofRouter.HandleFunc(PprofRoutePrefix+"/profile", profile)
 	pprofRouter.HandleFunc(PprofRoutePrefix+"/symbol", symbol)

@@ -93,6 +93,69 @@ router := handlers.NewRouter(logger)
 router.Use(MiddlewareFunc(ErrorHandler))
 ```
 
+### Profiling router (pprof)
+
+This package provides a ready-to-use router exposing Go's `net/http/pprof` endpoints behind HTTP Basic Auth.
+
+Profiling endpoints are enabled only if all the following environment variables are set:
+
+- `PPROF_ENABLED`: `true` to enable
+- `PPROF_USERNAME`: username for Basic Auth
+- `PPROF_PASSWORD`: password for Basic Auth
+
+If one of these variables is missing (or if `PPROF_ENABLED` is `false`), the profiling router is returned but has no routes registered (requests will return `404`).
+
+Create the router with `NewProfilingRouter(ctx)` and mount it on your main router.
+
+```go
+import (
+	"context"
+	"net/http"
+
+	"github.com/Scalingo/go-handlers"
+	"github.com/Scalingo/go-utils/logger"
+)
+
+func main() {
+	log := logger.Default()
+	ctx := logger.ToCtx(context.Background(), log)
+
+	r := handlers.NewRouter(log)
+
+	pprofRouter, err := handlers.NewProfilingRouter(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	// Route all /debug/pprof* requests to the profiling router.
+	r.PathPrefix(handlers.PprofRoutePrefix).Handler(pprofRouter)
+
+	_ = http.ListenAndServe(":8080", r)
+}
+```
+
+The profiling endpoints are exposed under `handlers.PprofRoutePrefix` (currently `/debug/pprof`).
+
+When enabled, the following endpoints are available under `/debug/pprof`:
+
+- `/` (index)
+- `/profile`
+- `/symbol`
+- `/cmdline`
+- `/trace`
+- `/allocs`
+- `/heap`
+- `/mutex`
+- `/goroutine`
+- `/threadcreate`
+- `/block`
+
+Example (CPU profile):
+
+```sh
+go tool pprof -http=:0 http://PPROF_USERNAME:PPROF_PASSWORD@localhost:8080/debug/pprof/profile?seconds=30
+```
+
 ## Release a New Version
 
 Bump new version number in `CHANGELOG.md` and `README.md`.
