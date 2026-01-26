@@ -153,7 +153,7 @@ When enabled, the following endpoints are available under `/debug/pprof`:
 Example (CPU profile):
 
 ```sh
-go tool pprof -http=:0 http://PPROF_USERNAME:PPROF_PASSWORD@localhost:8080/debug/pprof/profile?seconds=30
+go tool pprof -http=:12345 http://PPROF_USERNAME:PPROF_PASSWORD@localhost:8080/debug/pprof/profile?seconds=30
 ```
 
 ## Release a New Version
