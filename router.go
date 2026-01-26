@@ -11,18 +11,22 @@ type Router struct {
 }
 
 func NewRouter(logger logrus.FieldLogger) *Router {
-	r := &Router{}
-	r.Router = mux.NewRouter()
-	r.Use(MiddlewareFunc(RequestIDMiddleware))
-	r.Use(NewLoggingMiddleware(logger))
-	return r
+	return &Router{
+		Router: mux.NewRouter(),
+		middlewares: []Middleware{
+			NewLoggingMiddleware(logger),
+			MiddlewareFunc(RequestIDMiddleware),
+		},
+	}
 }
 
 func New() *Router {
-	r := &Router{}
-	r.Router = mux.NewRouter()
-	r.Use(MiddlewareFunc(RequestIDMiddleware))
-	return r
+	return &Router{
+		Router: mux.NewRouter(),
+		middlewares: []Middleware{
+			MiddlewareFunc(RequestIDMiddleware),
+		},
+	}
 }
 
 func (r *Router) HandleFunc(pattern string, f HandlerFunc) *mux.Route {
