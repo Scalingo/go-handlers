@@ -2,6 +2,8 @@
 
 ## To be Released
 
+- fix(profiling_router): correctly initialize the empty router
+
 ## v1.9.1
 
 - build(go.mod): update github.com/Scalingo/go-utils/errors from v3.0.0 to v3.1.1
