@@ -120,17 +120,18 @@ func main() {
 	log := logger.Default()
 	ctx := logger.ToCtx(context.Background(), log)
 
-	r := handlers.NewRouter(log)
+	router := handlers.NewRouter(log)
 
 	pprofRouter, err := handlers.NewProfilingRouter(ctx)
 	if err != nil {
-		panic(err)
+		log.WithError(err).Error("Fail to start profiling routes")
+	} else {
+		log.Info("Adding profiling routes to the web server")
+		// Route all /debug/pprof/* requests to the profiling router.
+		router.PathPrefix(handlers.PprofRoutePrefix).Handler(pprofRouter)
 	}
 
-	// Route all /debug/pprof* requests to the profiling router.
-	r.PathPrefix(handlers.PprofRoutePrefix).Handler(pprofRouter)
-
-	_ = http.ListenAndServe(":8080", r)
+	_ = http.ListenAndServe(":8080", router)
 }
 ```
 
