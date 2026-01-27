@@ -2,7 +2,10 @@
 
 ## To be Released
 
+## v1.9.2
+
 - fix(profiling_router): correctly initialize the empty router
+- chore(deps): various dependencies updates
 
 ## v1.9.1
 
