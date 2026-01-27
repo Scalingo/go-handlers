@@ -2,6 +2,8 @@
 
 ## To be Released
 
+- feat(otel) Add opentelemetry instrumentation by default for all requests served by the server
+
 ## v1.9.2
 
 - fix(profiling_router): correctly initialize the empty router
