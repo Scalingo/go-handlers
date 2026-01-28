@@ -1,4 +1,4 @@
-# Custom Router and Handler v1.9.2
+# Custom Router and Handler v1.10.0
 
 ## Advantages
 
@@ -164,7 +164,7 @@ Bump new version number in `CHANGELOG.md` and `README.md`.
 Commit, tag and create a new release:
 
 ```sh
-version="1.9.2"
+version="1.10.0"
 
 git switch --create release/${version}
 git add CHANGELOG.md README.md
