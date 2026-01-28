@@ -20,7 +20,7 @@ const (
 )
 
 func TestProfilingRouterActivation(t *testing.T) {
-	t.Run("It should not start profiling if pprofEnabled not set", func(t *testing.T) {
+	t.Run("does nots start profiling if pprofEnabled not set", func(t *testing.T) {
 		// arrange
 		t.Setenv("PPROF_ENABLED", "")
 		ctx := context.Background()
@@ -33,7 +33,7 @@ func TestProfilingRouterActivation(t *testing.T) {
 		assert.False(t, isProfilingEnabled(profilingRouter))
 	})
 
-	t.Run("It should not start profiling if not a bool", func(t *testing.T) {
+	t.Run("does nots start profiling if not a bool", func(t *testing.T) {
 		// arrange
 		t.Setenv("PPROF_ENABLED", "obviouslyNotABool")
 		ctx := context.Background()
@@ -46,7 +46,7 @@ func TestProfilingRouterActivation(t *testing.T) {
 		assert.Nil(t, profilingRouter)
 	})
 
-	t.Run("It should not start profiling if not enabled", func(t *testing.T) {
+	t.Run("does nots start profiling if not enabled", func(t *testing.T) {
 		// arrange
 		t.Setenv("PPROF_ENABLED", "false")
 		ctx := context.Background()
@@ -59,7 +59,7 @@ func TestProfilingRouterActivation(t *testing.T) {
 		assert.False(t, isProfilingEnabled(profilingRouter))
 	})
 
-	t.Run("It should not start profiling if username is not set", func(t *testing.T) {
+	t.Run("does nots start profiling if username is not set", func(t *testing.T) {
 		// arrange
 		t.Setenv("PPROF_ENABLED", "true")
 		t.Setenv("PPROF_PASSWORD", password)
@@ -73,7 +73,7 @@ func TestProfilingRouterActivation(t *testing.T) {
 		assert.False(t, isProfilingEnabled(profilingRouter))
 	})
 
-	t.Run("It should not start profiling if password is not set", func(t *testing.T) {
+	t.Run("does nots start profiling if password is not set", func(t *testing.T) {
 		// arrange
 		t.Setenv("PPROF_ENABLED", "true")
 		t.Setenv("PPROF_USERNAME", username)
@@ -87,7 +87,7 @@ func TestProfilingRouterActivation(t *testing.T) {
 		assert.False(t, isProfilingEnabled(profilingRouter))
 	})
 
-	t.Run("It should start profiling if all environment variables are set", func(t *testing.T) {
+	t.Run("starts profiling if all environment variables are set", func(t *testing.T) {
 		// arrange
 		t.Setenv("PPROF_ENABLED", "true")
 		t.Setenv("PPROF_USERNAME", username)
@@ -104,7 +104,7 @@ func TestProfilingRouterActivation(t *testing.T) {
 }
 
 func TestProfilingRouterNotExistingRoute(t *testing.T) {
-	t.Run("it should respond not found", func(t *testing.T) {
+	t.Run("responds not found", func(t *testing.T) {
 		// arrange
 		path := PprofRoutePrefix + "/path_does_not_exist"
 
@@ -130,7 +130,7 @@ func TestProfilingRouterNotExistingRoute(t *testing.T) {
 }
 
 func TestProfilingRouterEndpointWithoutAuth(t *testing.T) {
-	t.Run("it should return unauthorized", func(t *testing.T) {
+	t.Run("returns unauthorized", func(t *testing.T) {
 		// arrange
 		t.Setenv("PPROF_ENABLED", "true")
 		t.Setenv("PPROF_USERNAME", username)
@@ -156,7 +156,7 @@ func TestProfilingRouterEndpointWithoutAuth(t *testing.T) {
 func TestProfilingRouterEndpoint(t *testing.T) {
 	pathsToTest := []string{
 		"/",
-		"/profile",
+		"/profile?seconds=1",
 		"/symbol",
 		"/cmdline",
 		"/trace",
@@ -169,7 +169,7 @@ func TestProfilingRouterEndpoint(t *testing.T) {
 	}
 
 	for _, path := range pathsToTest {
-		t.Run("it should return pprof["+path+"]", func(t *testing.T) {
+		t.Run("returns pprof["+path+"]", func(t *testing.T) {
 			// arrange
 			t.Setenv("PPROF_ENABLED", "true")
 			t.Setenv("PPROF_USERNAME", username)
