@@ -45,6 +45,8 @@ func WithoutOtelInstrumentation() RouterOption {
 	}
 }
 
+// NewRouter initializes a router. In containers 3 middleware by default, error
+// catching, logging and OpenTelemetry instrumentation
 func NewRouter(logger logrus.FieldLogger, options ...RouterOption) *Router {
 	r := &Router{
 		Router:        mux.NewRouter(),
@@ -64,6 +66,7 @@ func NewRouter(logger logrus.FieldLogger, options ...RouterOption) *Router {
 	return r
 }
 
+// Deprecated: Use NewRouter() instead
 func New(options ...RouterOption) *Router {
 	return NewRouter(logger.Default(), options...)
 }

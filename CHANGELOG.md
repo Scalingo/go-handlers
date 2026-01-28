@@ -2,6 +2,7 @@
 
 ## To be Released
 
+- deprecation(constructor) Add deprecation command for `New()` method
 - feat(otel) Add opentelemetry instrumentation by default for all requests served by the server
 
 ## v1.9.2
