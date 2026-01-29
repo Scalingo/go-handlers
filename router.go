@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"os"
+
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 
 	"github.com/Scalingo/go-utils/logger"
 )
@@ -12,30 +14,28 @@ type Router struct {
 	*mux.Router
 	middlewares []Middleware
 	// otelOptions are the options used for OpenTelemetry instrumentation
-	otelOptions []otelhttp.Option
-	// otelOperation is the operation name used for OpenTelemetry instrumentation
-	// It gives the name of the spans created for each request to which metrics
-	// are attachd
-	otelOperation string
+	otelOptions []otelmux.Option
+	// Describe the name of the (virtual) server handling
+	otelServiceName string
 	// otelEnabled indicates if OpenTelemetry instrumentation is enabled (true by default)
 	otelEnabled bool
 }
 
 const (
-	otelDefaultOperation = "http"
+	otelDefaultServiceName = "http"
 )
 
 type RouterOption func(r *Router)
 
-func WithOtelOptions(opts ...otelhttp.Option) RouterOption {
+func WithOtelOptions(opts ...otelmux.Option) RouterOption {
 	return func(r *Router) {
 		r.otelOptions = opts
 	}
 }
 
-func WithOtelOperation(name string) RouterOption {
+func WithOtelServiceName(name string) RouterOption {
 	return func(r *Router) {
-		r.otelOperation = name
+		r.otelServiceName = name
 	}
 }
 
@@ -48,10 +48,15 @@ func WithoutOtelInstrumentation() RouterOption {
 // NewRouter initializes a router. In containers 3 middleware by default, error
 // catching, logging and OpenTelemetry instrumentation
 func NewRouter(logger logrus.FieldLogger, options ...RouterOption) *Router {
+	otelServiceName := otelDefaultServiceName
+	if os.Getenv("OTEL_SERVICE_NAME") != "" {
+		otelServiceName = os.Getenv("OTEL_SERVICE_NAME")
+	}
+
 	r := &Router{
-		Router:        mux.NewRouter(),
-		otelOperation: otelDefaultOperation,
-		otelEnabled:   true,
+		Router:          mux.NewRouter(),
+		otelServiceName: otelServiceName,
+		otelEnabled:     true,
 		middlewares: []Middleware{
 			NewLoggingMiddleware(logger),
 			MiddlewareFunc(RequestIDMiddleware),
@@ -61,7 +66,7 @@ func NewRouter(logger logrus.FieldLogger, options ...RouterOption) *Router {
 		opt(r)
 	}
 	if r.otelEnabled {
-		r.Router.Use(otelhttp.NewMiddleware(r.otelOperation, r.otelOptions...))
+		r.Router.Use(otelmux.Middleware(r.otelServiceName, r.otelOptions...))
 	}
 	return r
 }

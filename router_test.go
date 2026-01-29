@@ -44,14 +44,6 @@ func TestNewRouter_OtelMiddleware(t *testing.T) {
 
 	spans := spanRecorder.Ended()
 	require.NotEmpty(t, spans)
-	found := false
-	for _, span := range spans {
-		if span.Name() == otelDefaultOperation {
-			found = true
-			break
-		}
-	}
-	require.True(t, found)
 
 	var metrics metricdata.ResourceMetrics
 	require.NoError(t, metricReader.Collect(t.Context(), &metrics))

@@ -2,6 +2,10 @@
 
 ## To be Released
 
+## v1.11.0
+
+- feat(otel) Improve opentelemetry instrumentation by integrating with gorilla mux, add missing http.route attribute
+
 ## v1.10.0
 
 - deprecation(constructor) Add deprecation command for `New()` method
